@@ -1,0 +1,21 @@
+{
+    "weather": {
+      "welcome": "Welcome!",
+      "goToFavorites": "Go to favorites",
+      "fieldPlaceholder": "City e.g 'New...'",
+      "cleanButton": "Clean",
+      "cityRequired": "City is required"
+    },
+    "city": {
+      "maxTemp": "Max: %{maxTemp}°",
+      "minTemp": "Min: %{minTemp}°",
+      "temperature": "Temperature: %{temperature}°С",
+      "date": "Date: %{date}"
+    },
+    "backButton": "Go back",
+    "favorites": {
+      "title": "Favorites",
+      "removeButton": "Remove all"
+    }
+  }
+  
