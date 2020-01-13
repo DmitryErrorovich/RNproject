@@ -42,6 +42,7 @@
     "ter-indent": [true, 2],
     "no-default-export": true,
     "no-duplicate-imports": true,
+    "ordered-imports": false,
     "trailing-comma": true,
     "array-type": [true, "generic"],
     "no-submodule-imports": false,

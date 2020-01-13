@@ -1,27 +1,27 @@
-import { Field, InjectedFormikProps, withFormik } from "formik";
-import { inject, observer } from "mobx-react";
-import React, { Component } from "react";
-import { Alert, Text, View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
-import Swipeable from "react-native-swipeable";
+import { Field, InjectedFormikProps, withFormik } from 'formik';
+import { inject, observer } from 'mobx-react';
+import React, { Component } from 'react';
+import { Alert, Text, View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import Swipeable from 'react-native-swipeable';
 import {
   NavigationParams,
   NavigationScreenProp,
   FlatList,
-  SafeAreaView
-} from "react-navigation";
-import * as Yup from "yup";
+  SafeAreaView,
+} from 'react-navigation';
+import * as Yup from 'yup';
 
 import { CustomButton } from 'components/button/Button';
-import { InputField } from "components/inputField/Input";
-import { i18n } from "i18n/i18n";
-import { Routes } from "navigation/routes";
-import { PRODUCT_STORE, IProductsStore } from "store/productsStore";
-import { styles } from "./styles";
-import { HeaderComponent } from "components/headerComponent/headerComponent";
-import { theme } from "components/sharedStyles";
-import { WeatherIcon } from "components/weatherIcon/WeatherIcon";
-import { ProductItem } from "features/ProductItem/ProductItem";
+import { InputField } from 'components/inputField/Input';
+import { i18n } from 'i18n/i18n';
+import { Routes } from 'navigation/routes';
+import { PRODUCT_STORE, IProductsStore } from 'store/productsStore';
+import { styles } from './styles';
+import { HeaderComponent } from 'components/headerComponent/headerComponent';
+import { theme } from 'components/sharedStyles';
+import { WeatherIcon } from 'components/weatherIcon/WeatherIcon';
+import { ProductItem } from 'features/ProductItem/ProductItem';
 
 interface IProps {
   navigation: NavigationScreenProp<{}, NavigationParams>;
@@ -38,11 +38,12 @@ export class ProductsList extends Component<IProps> {
   public selectProduct = (item: number) => async () => {
     await this.props[PRODUCT_STORE].getProductReviews(item.id);
     this.props.navigation.navigate({
-      routeName: Routes.ProductInfo, params: {
-        selected: item
-      }
-    })
-  }
+      routeName: Routes.ProductInfo,
+      params: {
+        selected: item,
+      },
+    });
+  };
 
   public productKeyExtractor = (item: any) => `Product-${item.id}`;
 
@@ -52,12 +53,13 @@ export class ProductsList extends Component<IProps> {
       onPress={this.selectProduct(item)}
       item={item}
     />
-  )
+  );
 
   public render() {
-    const { filteredProducts } = this.props[PRODUCT_STORE]
+    const { filteredProducts } = this.props[PRODUCT_STORE];
+    console.log({ filteredProducts });
     return (
-      <View style={{backgroundColor: '#465881', flex: 1}}>
+      <View style={{ backgroundColor: '#465881', flex: 1 }}>
         {/* <SafeAreaView style={{ flex: 0, backgroundColor: theme.colors.primary }} /> //implement for IOS later */}
         <HeaderComponent
           hideBackButton

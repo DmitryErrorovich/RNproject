@@ -1,29 +1,23 @@
-import { Field, InjectedFormikProps, withFormik } from "formik";
-import { inject, observer } from "mobx-react";
-import React, { Component } from "react";
-import { Alert, Text, View, CameraRoll, Dimensions, Animated } from "react-native";
-import { ScrollView, TouchableOpacity, TouchableWithoutFeedback } from "react-native-gesture-handler";
-import Swipeable from "react-native-swipeable";
+import { Field, InjectedFormikProps } from 'formik';
+import { inject, observer } from 'mobx-react';
+import React, { Component } from 'react';
+import {
+  Text,
+  View,
+  Animated,
+} from 'react-native';
 import {
   NavigationParams,
   NavigationScreenProp,
-  FlatList,
-  SafeAreaView
-} from "react-navigation";
-import * as Yup from "yup";
+} from 'react-navigation';
+import * as Yup from 'yup';
 
-import { CustomButton } from "components/button/Button";
-import { InputField } from "components/inputField/Input";
-import { Rating, AirbnbRating } from 'react-native-elements';
-import { i18n } from "i18n/i18n";
-import { Routes } from "navigation/routes";
-import { PRODUCT_STORE, IProductsStore } from "store/productsStore";
-import { styles } from "./styles";
-import { HeaderComponent } from "components/headerComponent/headerComponent";
-import { theme } from "components/sharedStyles";
-import { WeatherIcon } from "components/weatherIcon/WeatherIcon";
-import { TouchableRipple, TextInput, Button } from "react-native-paper";
-import { ProductItem } from "features/ProductItem/ProductItem";
+import { AirbnbRating } from 'react-native-elements';
+import { PRODUCT_STORE, IProductsStore } from 'store/productsStore';
+import { HeaderComponent } from 'components/headerComponent/headerComponent';
+import { TextInput, Button } from 'react-native-paper';
+import { ProductItem } from 'features/ProductItem/ProductItem';
+import { withFormik } from '../../utils/withFormik';
 
 const COMMENT_MAX_HEIGHT = 125;
 const COMMENT_MIN_HEIGHT = 0;
@@ -35,8 +29,8 @@ interface IProps {
 }
 
 export enum Fields {
-  CommentField = "COMMENT_FIELD",
-  RateField = "RATE_FIELD",
+  CommentField = 'COMMENT_FIELD',
+  RateField = 'RATE_FIELD',
 }
 
 export interface IFormValues {
@@ -45,10 +39,8 @@ export interface IFormValues {
 }
 
 const validationSchema = Yup.object().shape({
-  CommentField: Yup.string()
-    .required("Type something please"),
-  RateField: Yup.string()
-    .required("Rate it please")
+  CommentField: Yup.string().required('Type something please'),
+  RateField: Yup.string().required('Rate it please'),
 });
 
 const formikEnhance = withFormik<IProps, IFormValues>({
@@ -56,60 +48,70 @@ const formikEnhance = withFormik<IProps, IFormValues>({
   enableReinitialize: true,
   mapPropsToValues: () => ({
     [Fields.CommentField]: '',
-    [Fields.RateField]: 0
+    [Fields.RateField]: 0,
   }),
   handleSubmit: async (values, formikBag) => {
-    console.log('POST')
-    await formikBag.props[PRODUCT_STORE].postProductReview(values[Fields.CommentField], values[Fields.RateField])
-  }
+    await formikBag.props[PRODUCT_STORE].postProductReview(
+      values[Fields.CommentField],
+      values[Fields.RateField],
+    );
+  },
 });
 
 @inject(PRODUCT_STORE)
 @formikEnhance
 @observer
-export class ProductInfo extends Component<InjectedFormikProps<IProps, IFormValues>> {
-
-  constructor(props) {
+export class ProductInfo extends Component<
+  InjectedFormikProps<IProps, IFormValues>
+> {
+  constructor(props: IProps & any) {
     super(props);
     this.state = {
-      scrollY: new Animated.Value(0)
-    }
+      scrollY: new Animated.Value(0),
+    };
   }
 
   public get selectedItem() {
     return this.props.navigation.getParam('selected');
   }
 
-  public reviewsKeyExtractor = (item: any) => `Review-${item.id}`
+  public reviewsKeyExtractor = (item: any) => `Review-${item.id}`;
 
   public renderReview = ({ item }: any) => (
-    <View style={{ flex: 1, alignItems: "center", marginBottom: 20, padding: 15, borderRadius: 8, borderColor: '#eee', borderWidth: 1 }}>
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        marginBottom: 20,
+        padding: 15,
+        borderRadius: 8,
+        borderColor: '#eee',
+        borderWidth: 1,
+      }}>
       <AirbnbRating
         isDisabled
         count={5}
-        reviews={["Terrible", "Bad", "OK", "Good", "Amazing"]}
+        reviews={['Terrible', 'Bad', 'OK', 'Good', 'Amazing']}
         defaultRating={item.rate}
         size={15}
       />
-      <View style={{ marginTop: 15 }} >
+      <View style={{ marginTop: 15 }}>
         <Text style={{ fontWeight: 'bold', fontSize: 14 }}>Comment: </Text>
-        <Text style={{ fontSize: 16 }}>
-          {item.text}
-        </Text>
+        <Text style={{ fontSize: 16 }}>{item.text}</Text>
       </View>
     </View>
-  )
+  );
 
   public changeCommentText = (text: string) => {
-    console.log(text)
-    this.props.setFieldValue(Fields.CommentField, text)
-    console.log({ values: this.props.values })
-  }
+    console.log(text);
+    this.props.setFieldValue(Fields.CommentField, text);
+    console.log({ values: this.props.values });
+  };
 
   public rate = (rate: number) => {
-    console.log({ rate })
-    this.props.setFieldValue(Fields.RateField, rate)
-  }
+    console.log({ rate });
+    this.props.setFieldValue(Fields.RateField, rate);
+  };
 
   public render() {
     let _scrollView: any;
@@ -133,35 +135,43 @@ export class ProductInfo extends Component<InjectedFormikProps<IProps, IFormValu
         if (_scrollView) {
           _scrollView.scrollToOffset({ offset: 0, animated: false });
         }
-      } else if (COMMENT_SCROLL_DISTANCE / 2 <= y && y < COMMENT_SCROLL_DISTANCE) {
+      } else if (
+        COMMENT_SCROLL_DISTANCE / 2 <= y &&
+        y < COMMENT_SCROLL_DISTANCE
+      ) {
         if (_scrollView) {
-          _scrollView.scrollToOffset({ offset: COMMENT_SCROLL_DISTANCE, animated: false });
+          _scrollView.scrollToOffset({
+            offset: COMMENT_SCROLL_DISTANCE,
+            animated: false,
+          });
         }
       }
     };
-    console.log(this.props.errors)
+    console.log(this.props.errors);
     return (
       <Animated.View>
         <HeaderComponent
           navigation={this.props.navigation}
-          screenTitle='Product details'
+          screenTitle="Product details"
           background
         />
-        <Animated.View style={{ borderBottomColor: '#eee', borderBottomWidth: 2 }}>
-          <ProductItem
-            hideBorder
-            item={this.selectedItem}
-          />
-          <Animated.View style={{ opacity: commentOpacity, height: commentHeight, paddingHorizontal: 25 }}>
-
+        <Animated.View
+          style={{ borderBottomColor: '#eee', borderBottomWidth: 2 }}>
+          <ProductItem hideBorder item={this.selectedItem} />
+          <Animated.View
+            style={{
+              opacity: commentOpacity,
+              height: commentHeight,
+              paddingHorizontal: 25,
+            }}>
             <Field
               name={Fields.CommentField}
               component={TextInput}
               onChangeText={this.changeCommentText}
-              mode='outlined'
+              mode="outlined"
               error={this.props.errors[Fields.CommentField]}
-              selectionColor='#6d62ee'
-              label='Leave you comment'
+              selectionColor="#6d62ee"
+              label="Leave you comment"
             />
             <Field
               name={Fields.RateField}
@@ -173,7 +183,12 @@ export class ProductInfo extends Component<InjectedFormikProps<IProps, IFormValu
               size={15}
             />
 
-            <Button disabled={!this.props.values[Fields.CommentField]} mode='contained' onPress={this.props.handleSubmit} >Send</Button>
+            <Button
+              disabled={!this.props.values[Fields.CommentField]}
+              mode="contained"
+              onPress={this.props.handleSubmit}>
+              Send
+            </Button>
           </Animated.View>
         </Animated.View>
 
@@ -189,9 +204,9 @@ export class ProductInfo extends Component<InjectedFormikProps<IProps, IFormValu
           scrollEventThrottle={16}
           onScrollEndDrag={onScrollEndSnapToEdge}
           renderItem={this.renderReview}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: this.state.scrollY } } }],
-          )}
+          onScroll={Animated.event([
+            { nativeEvent: { contentOffset: { y: this.state.scrollY } } },
+          ])}
         />
       </Animated.View>
     );
