@@ -1,17 +1,18 @@
-import AsyncStorage from "@react-native-community/async-storage";
-import { create } from "mobx-persist";
-import { inject } from "mobx-react";
-import React, { Component } from "react";
+import AsyncStorage from '@react-native-community/async-storage';
+import { create } from 'mobx-persist';
+import { inject } from 'mobx-react';
+import React, { Component } from 'react';
 import {
   NavigationActions,
   NavigationParams,
   NavigationScreenProp,
-  StackActions
-} from "react-navigation";
+  StackActions,
+} from 'react-navigation';
 
-import { Routes } from "navigation/routes";
-import { IUserSettingsStore, USER_SETTINGS_STORE } from "store/userSettings";
-import { PRODUCT_STORE, IProductsStore } from "store/productsStore";
+import { Routes } from 'navigation/routes';
+import { IUserSettingsStore, USER_SETTINGS_STORE } from 'store/userSettings';
+import { PRODUCT_STORE, IProductsStore } from 'store/productsStore';
+import { View } from 'react-native';
 
 interface IProps {
   navigation: NavigationScreenProp<{}, NavigationParams>;
@@ -21,7 +22,7 @@ interface IProps {
 
 const hydrate = create({
   storage: AsyncStorage,
-  jsonify: true
+  jsonify: true,
 });
 
 @inject(PRODUCT_STORE, USER_SETTINGS_STORE)
@@ -30,7 +31,7 @@ export class Entrypoint extends Component<IProps> {
     const {
       [PRODUCT_STORE]: productStore,
       [USER_SETTINGS_STORE]: userSettings,
-      navigation
+      navigation,
     } = this.props;
     await hydrate(PRODUCT_STORE, productStore);
     await hydrate(USER_SETTINGS_STORE, userSettings);
@@ -40,12 +41,12 @@ export class Entrypoint extends Component<IProps> {
     navigation.dispatch(
       StackActions.reset({
         index: 0,
-        actions: [NavigationActions.navigate({ routeName: destinationRoute })]
-      })
+        actions: [NavigationActions.navigate({ routeName: destinationRoute })],
+      }),
     );
   }
 
   public render() {
-    return null;
+    return <View style={{ flex: 1, backgroundColor: '#000' }} />;
   }
 }

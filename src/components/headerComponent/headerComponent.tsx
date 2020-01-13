@@ -1,10 +1,10 @@
-import React, { PureComponent } from "react";
-import { View, Platform, Text } from "react-native";
-import { Appbar, Menu } from "react-native-paper";
+import React, { PureComponent } from 'react';
+import { View, Platform, Text } from 'react-native';
+import { Appbar, Menu } from 'react-native-paper';
 
-import { styles } from "./headerComponentStyle";
-import { CustomButton } from "components/button/Button";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { styles } from './headerComponentStyle';
+import { CustomButton } from 'components/button/Button';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/AntDesign';
 
 interface IHeaderProps {
@@ -28,32 +28,31 @@ interface IHeaderState {
   visible: boolean;
 }
 
-export class HeaderComponent extends PureComponent<
-  IHeaderProps,
-  IHeaderState
-  > {
+export class HeaderComponent extends PureComponent<IHeaderProps, IHeaderState> {
   constructor(props: ScreenHeaderProps) {
     super(props);
     this.state = { visible: false };
   }
 
   public get contentStyle() {
-    return this.props.hideBackButton ? { justifyContent: 'center', alignItems: 'center' } : null
+    return this.props.hideBackButton
+      ? { justifyContent: 'center', alignItems: 'center' }
+      : null;
   }
 
   static defaultProps = {
     visibleDropdown: false,
-    hideDropDown: () => { }
+    hideDropDown: () => {},
   };
 
   public get textColor() {
     return '#fff';
-  };
+  }
 
   public get backButtonStyle() {
     return Platform.select({
       ios: styles.iosBackButton,
-      android: null
+      android: null,
     });
   }
 
@@ -64,10 +63,10 @@ export class HeaderComponent extends PureComponent<
   public backPressed() {
     if (this.props.leavingPageMessage) {
       AlertService.showYesNoAlert(
-        "",
+        '',
         this.props.leavingPageMessage,
         this.goBack,
-        null
+        null,
       );
     } else {
       this.goBack();
@@ -97,12 +96,14 @@ export class HeaderComponent extends PureComponent<
   };
 
   public renderBackButton = () => {
-    return !this.props.hideBackButton ? (<Appbar.BackAction
-      style={this.backButtonStyle}
-      color={this.textColor}
-      onPress={this.goBack}
-    />) : null
-  }
+    return !this.props.hideBackButton ? (
+      <Appbar.BackAction
+        style={this.backButtonStyle}
+        color={this.textColor}
+        onPress={this.goBack}
+      />
+    ) : null;
+  };
 
   public render() {
     const headerStyle = this.props.background
@@ -118,9 +119,13 @@ export class HeaderComponent extends PureComponent<
             title={this.props.screenTitle}
             color={this.textColor}
           />
-          <TouchableOpacity onPress={this.props.logout}>
-            <Icon style={{marginRight: 5}} name="logout" size={25} color="#fff"/>
-          </TouchableOpacity>
+          <Icon
+            onPress={this.props.logout}
+            style={{ marginRight: 5 }}
+            name="logout"
+            size={25}
+            color="#fff"
+          />
         </Appbar.Header>
 
         {/* {!this.props.disableNotice && <OfflineNotice />} */}

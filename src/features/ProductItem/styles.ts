@@ -21,5 +21,23 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderColor: '#eee',
+  },
+  descriptionContainer: {
+    marginVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+  },
+  productImage: {
+    borderRadius: 50,
+    width: 100,
+    height: 100,
+    borderColor: '#eee',
+    borderWidth: 1,
+  },
+  title: {
+    fontSize: 20,
+    paddingVertical: 5,
+    borderBottomColor: '#eee',
+    borderBottomWidth: 1,
   }
 });

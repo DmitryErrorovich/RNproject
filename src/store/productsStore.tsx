@@ -4,11 +4,15 @@ import { persist } from 'mobx-persist';
 
 import { getProducts, getProductReviews, postProductReview } from '../api/auth';
 import AsyncStorage from '@react-native-community/async-storage';
+import { IReview, IProduct } from '../models/Products';
+import moment from 'moment';
 
 export interface IProductsStore {
-  products: [];
-  filteredProducts: [];
+  products: Array<IProduct>;
+  filteredProducts: Array<IProduct>;
   selectedProductID: number;
+  reviews: Array<IReview>;
+  filteredReviews: Array<IReview>;
 
   getProducts: () => Promise<void>;
   getProductReviews: (id: number) => Promise<void>;
@@ -23,6 +27,13 @@ export class ProductsStore implements IProductsStore {
   @observable public selectedProductID = null;
 
   public DEBOUNCE_TIME = 1000;
+
+  @computed
+  public get filteredReviews() {
+    return filteredReview = this.reviews.slice().sort((a: IReview, b: IReview) =>
+      moment(b.created_at).diff(moment(a.created_at)),
+    );
+  }
 
   @computed
   public get filteredProducts() {
@@ -61,7 +72,8 @@ export class ProductsStore implements IProductsStore {
       const response = await getProductReviews(id, userStore.user.token);
       this.selectedProductID = id;
       console.log({ response });
-      this.reviews = toJS(response);
+      this.reviews = [...toJS(response)];
+      console.log({ review: toJS(this.reviews) });
     } catch (error) {
       throw new Error(error);
     }
@@ -70,13 +82,15 @@ export class ProductsStore implements IProductsStore {
   @action.bound
   public async postProductReview(comment: string, rate: number) {
     try {
+      console.log('PLEASE');
       const userStore = await this.getStorageValue('USER_SETTINGS_STORE');
-      await postProductReview(
+      const response = await postProductReview(
         comment,
         rate,
         this.selectedProductID,
         userStore.user.token,
       );
+      console.log({ response });
     } catch (error) {
       throw new Error(error);
     }

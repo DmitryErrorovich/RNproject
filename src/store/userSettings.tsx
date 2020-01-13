@@ -11,6 +11,7 @@ export interface IUserSettingsStore {
   signIn: (username: string, password: string) => Promise<boolean>;
   signUp: (username: string, password: string) => Promise<boolean>;
   clean: () => void;
+  logout: () => void;
 }
 
 export const USER_SETTINGS_STORE = "USER_SETTINGS_STORE";
@@ -66,4 +67,11 @@ export class UserSettingsStore implements IUserSettingsStore {
     this.user.token = "";
     this.error = "";
   };
+
+  public logout() {
+    this.user.email = "";
+    this.user.password = "";
+    this.user.token = "";
+    this.error = "";
+  }
 }

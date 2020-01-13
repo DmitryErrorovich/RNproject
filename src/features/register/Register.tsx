@@ -1,15 +1,15 @@
-import { Field, InjectedFormikProps, withFormik } from "formik";
-import { inject, observer } from "mobx-react";
-import React, { Component } from "react";
-import { Alert, Text, View } from "react-native";
-import { NavigationParams, NavigationScreenProp } from "react-navigation";
-import * as Yup from "yup";
+import { Field, InjectedFormikProps, withFormik } from 'formik';
+import { inject, observer } from 'mobx-react';
+import React, { Component } from 'react';
+import { Alert, Text, View } from 'react-native';
+import { NavigationParams, NavigationScreenProp } from 'react-navigation';
+import * as Yup from 'yup';
 
-import { CustomButton } from "components/button/Button";
-import { InputField } from "components/inputField/Input";
-import { Routes } from "navigation/routes";
-import { IUserSettingsStore, USER_SETTINGS_STORE } from "store/userSettings";
-import { styles } from "./styles";
+import { CustomButton } from 'components/button/Button';
+import { InputField } from 'components/inputField/Input';
+import { Routes } from 'navigation/routes';
+import { IUserSettingsStore, USER_SETTINGS_STORE } from 'store/userSettings';
+import { styles } from './styles';
 
 interface IFormValues {
   email: string;
@@ -76,18 +76,18 @@ class RegisterForm extends Component<InjectedFormikProps<IProps, IFormValues>> {
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
-    .required("Email is required")
-    .email("Invalid email"),
+    .required('Email is required')
+    .email('Invalid email'),
   password: Yup.string()
-    .required("Empty password")
+    .required('Empty password')
     // tslint:disable-next-line:no-magic-numbers
-    .min(6, "Password is too short - should be 6 chars minimum.")
-    .matches(/[a-zA-Z]/, "Password can only contain Latin letters."),
+    .min(6, 'Password is too short - should be 6 chars minimum.')
+    .matches(/[a-zA-Z]/, 'Password can only contain Latin letters.'),
   confirmPassword: Yup.mixed()
-    .test("match", "Passwords do not match", function(password) {
+    .test('match', 'Passwords do not match', function(password) {
       return password === this.parent.password;
     })
-    .required("Password confirm is required")
+    .required('Password confirm is required'),
 });
 
 const formikEnhance = withFormik<IProps, IFormValues>({
@@ -95,23 +95,23 @@ const formikEnhance = withFormik<IProps, IFormValues>({
   enableReinitialize: true,
   mapPropsToValues: ({
     [USER_SETTINGS_STORE]: {
-      user: { email, password }
-    }
+      user: { email, password },
+    },
   }) => ({
     email,
-    password
+    password,
   }),
   handleSubmit: async ({ email, password }: IFormValues, formikBag) => {
     const isRegistered = await formikBag.props[USER_SETTINGS_STORE].signUp(
       email,
-      password
+      password,
     );
     isRegistered
       ? formikBag.props.navigation.navigate({ routeName: Routes.Auth })
       : Alert.alert(formikBag.props[USER_SETTINGS_STORE].error);
-  }
+  },
 });
 
 export const Register = inject(USER_SETTINGS_STORE)(
-  formikEnhance(observer(RegisterForm))
+  formikEnhance(observer(RegisterForm)),
 );

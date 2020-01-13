@@ -26,9 +26,10 @@ import { HeaderComponent } from 'components/headerComponent/headerComponent';
 import { theme } from 'components/sharedStyles';
 import { WeatherIcon } from 'components/weatherIcon/WeatherIcon';
 import { TouchableRipple, Divider } from 'react-native-paper';
+import { IProduct } from '../../models/Products';
 
 interface IProps {
-  item?: any;
+  item?: IProduct;
   hideBorder?: boolean;
   hideDescription?: boolean;
 
@@ -38,16 +39,11 @@ interface IProps {
 export class ProductItem extends Component<IProps> {
   public renderDescription = () =>
     this.props.hideDescription ? null : (
-      <View
-        style={{
-          marginVertical: 10,
-          alignItems: 'center',
-          justifyContent: 'space-evenly',
-        }}>
+      <View style={styles.descriptionContainer}>
         <Text style={{ fontWeight: 'bold', fontSize: 14 }}>Description:</Text>
-        <Text style={{ fontSize: 16 }}>{this.props.item.text}</Text>
+        <Text style={{ fontSize: 16 }}>{this.props.item?.text}</Text>
       </View>
-    );
+    )
 
   public render() {
     const { item, onPress, hideBorder } = this.props;
@@ -57,22 +53,10 @@ export class ProductItem extends Component<IProps> {
         style={hideBorder ? styles.containerWithoutBorder : styles.container}>
         <WeatherIcon
           icon={item.img}
-          style={{
-            borderRadius: 50,
-            width: 100,
-            height: 100,
-            borderColor: '#eee',
-            borderWidth: 1,
-          }}
+          style={styles.productImage}
         />
-        <Text
-          style={{
-            fontSize: 20,
-            paddingVertical: 5,
-            borderBottomColor: '#eee',
-            borderBottomWidth: 1,
-          }}>
-          {item.title}
+        <Text style={styles.title}>
+          {item?.title}
         </Text>
         {this.renderDescription()}
       </View>

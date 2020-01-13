@@ -69,13 +69,13 @@ export const postProductReview = async (text: string, rate: number, productID: n
     const { data } = await axios.post(
       `${HEROKU_API}/api/reviews/${productID}`,
       {
+        text,
+        rate
+      },
+      {
         headers: {
           Authorization: `Token ${token}`
-        },
-        body: JSON.stringify({
-          text,
-          rate
-        })
+        }
       }
     )
     return data

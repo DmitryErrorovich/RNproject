@@ -1,23 +1,20 @@
 import { Field, InjectedFormikProps } from 'formik';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import {
-  Text,
-  View,
-  Animated,
-} from 'react-native';
-import {
-  NavigationParams,
-  NavigationScreenProp,
-} from 'react-navigation';
+import { Text, View, Animated, RefreshControl } from 'react-native';
+import { NavigationParams, NavigationScreenProp } from 'react-navigation';
 import * as Yup from 'yup';
 
+import { isEqual } from 'lodash';
 import { AirbnbRating } from 'react-native-elements';
 import { PRODUCT_STORE, IProductsStore } from 'store/productsStore';
 import { HeaderComponent } from 'components/headerComponent/headerComponent';
 import { TextInput, Button } from 'react-native-paper';
 import { ProductItem } from 'features/ProductItem/ProductItem';
 import { withFormik } from '../../utils/withFormik';
+import { IReview } from '../../models/Products';
+import { USER_SETTINGS_STORE, IUserSettingsStore } from 'store/userSettings';
+import { Routes } from 'navigation/routes';
 
 const COMMENT_MAX_HEIGHT = 125;
 const COMMENT_MIN_HEIGHT = 0;
@@ -26,6 +23,7 @@ const COMMENT_SCROLL_DISTANCE = COMMENT_MAX_HEIGHT - COMMENT_MIN_HEIGHT;
 interface IProps {
   navigation: NavigationScreenProp<{}, NavigationParams>;
   [PRODUCT_STORE]: IProductsStore;
+  [USER_SETTINGS_STORE]: IUserSettingsStore;
 }
 
 export enum Fields {
@@ -44,21 +42,27 @@ const validationSchema = Yup.object().shape({
 });
 
 const formikEnhance = withFormik<IProps, IFormValues>({
-  validationSchema,
+  // validationSchema,
   enableReinitialize: true,
   mapPropsToValues: () => ({
     [Fields.CommentField]: '',
     [Fields.RateField]: 0,
   }),
   handleSubmit: async (values, formikBag) => {
+    const prodID = formikBag.props[PRODUCT_STORE].selectedProductID;
     await formikBag.props[PRODUCT_STORE].postProductReview(
       values[Fields.CommentField],
       values[Fields.RateField],
     );
+    await formikBag.props[PRODUCT_STORE].getProductReviews(prodID);
+    await formikBag.setValues({
+      [Fields.CommentField]: '',
+      [Fields.RateField]: 0,
+    });
   },
 });
 
-@inject(PRODUCT_STORE)
+@inject(PRODUCT_STORE, USER_SETTINGS_STORE)
 @formikEnhance
 @observer
 export class ProductInfo extends Component<
@@ -67,17 +71,43 @@ export class ProductInfo extends Component<
   constructor(props: IProps & any) {
     super(props);
     this.state = {
+      refreshing: false,
       scrollY: new Animated.Value(0),
+      // updateFlatList: true,
     };
   }
+
+  // public getSnapshotBeforeUpdate(prevProps: IProps) {
+  //   const isReviewsChanged = !isEqual(
+  //     prevProps[PRODUCT_STORE].filteredReviews,
+  //     this.props[PRODUCT_STORE].filteredReviews,
+  //   );
+
+  //   return isReviewsChanged;
+  // }
+
+  // public componentDidUpdate(
+  //   prevProps: IProps,
+  //   prevState: IState,
+  //   snapshot: boolean,
+  // ) {
+  //   if (snapshot) {
+  //     this.setState({ updateFlatList: !prevState.updateFlatList });
+  //   }
+  // }
 
   public get selectedItem() {
     return this.props.navigation.getParam('selected');
   }
 
-  public reviewsKeyExtractor = (item: any) => `Review-${item.id}`;
+  public logout = () => {
+    this.props[USER_SETTINGS_STORE].logout();
+    this.props.navigation.navigate({ routeName: Routes.Auth });
+  };
 
-  public renderReview = ({ item }: any) => (
+  public reviewsKeyExtractor = (item: IReview) => `Review-${item.id}`;
+
+  public renderReview = ({ item }: ListRenderItemInfo<IReview>) => (
     <View
       style={{
         flex: 1,
@@ -103,54 +133,38 @@ export class ProductInfo extends Component<
   );
 
   public changeCommentText = (text: string) => {
-    console.log(text);
     this.props.setFieldValue(Fields.CommentField, text);
-    console.log({ values: this.props.values });
   };
 
   public rate = (rate: number) => {
-    console.log({ rate });
     this.props.setFieldValue(Fields.RateField, rate);
   };
 
+  public onRefresh = async () => {
+    this.setState({ refreshing: true });
+    await this.props[PRODUCT_STORE].getProductReviews(this.selectedItem.id);
+    this.setState({ refreshing: false });
+  };
+
   public render() {
-    let _scrollView: any;
-    const { reviews } = this.props[PRODUCT_STORE];
+    const { filteredReviews } = this.props[PRODUCT_STORE];
+    console.log({filteredReviews});
+    console.log({updateFlatList:this.state.updateFlatList});
     const commentOpacity = this.state.scrollY.interpolate({
-      inputRange: [0, COMMENT_SCROLL_DISTANCE],
+      inputRange: [0, COMMENT_MIN_HEIGHT],
       outputRange: [1, 0],
       extrapolate: 'clamp',
     });
 
     const commentHeight = this.state.scrollY.interpolate({
-      inputRange: [0, COMMENT_MAX_HEIGHT],
+      inputRange: [0, COMMENT_SCROLL_DISTANCE],
       outputRange: [COMMENT_MAX_HEIGHT, COMMENT_MIN_HEIGHT],
       extrapolate: 'clamp',
     });
-
-    const onScrollEndSnapToEdge = (event: any) => {
-      const y = event.nativeEvent.contentOffset.y;
-
-      if (0 < y && y < COMMENT_SCROLL_DISTANCE / 2) {
-        if (_scrollView) {
-          _scrollView.scrollToOffset({ offset: 0, animated: false });
-        }
-      } else if (
-        COMMENT_SCROLL_DISTANCE / 2 <= y &&
-        y < COMMENT_SCROLL_DISTANCE
-      ) {
-        if (_scrollView) {
-          _scrollView.scrollToOffset({
-            offset: COMMENT_SCROLL_DISTANCE,
-            animated: false,
-          });
-        }
-      }
-    };
-    console.log(this.props.errors);
     return (
       <Animated.View>
         <HeaderComponent
+          logout={this.logout}
           navigation={this.props.navigation}
           screenTitle="Product details"
           background
@@ -193,16 +207,19 @@ export class ProductInfo extends Component<
         </Animated.View>
 
         <Animated.FlatList
+          data={filteredReviews}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this.onRefresh}
+            />
+          }
+          // extraData={this.state.updateFlatList}
           style={{ marginBottom: 100 }}
           contentContainerStyle={{ paddingHorizontal: 25 }}
           keyExtractor={this.reviewsKeyExtractor}
-          data={reviews}
-          ref={(scrollView: any) => {
-            _scrollView = scrollView ? scrollView._component : null;
-          }}
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}
-          onScrollEndDrag={onScrollEndSnapToEdge}
           renderItem={this.renderReview}
           onScroll={Animated.event([
             { nativeEvent: { contentOffset: { y: this.state.scrollY } } },
