@@ -7,38 +7,23 @@ import { Entrypoint } from 'features/entrypoint/Entrypoint';
 import { Register } from 'features/register/Register';
 import { Favorites } from 'features/ProductItem/Favorites';
 import { Routes } from './routes';
-import { LoggedInStack } from './LoggedInStack';
+import { ProductsList } from 'features/ProductsList/ProductsList';
+import { ProductInfo } from 'features/ProductInfo/Productinfo';
+import { UserScreen } from 'features/UserScreen/UserScreen';
 import { CameraScreen } from 'features/CameraScreen/CameraScreen';
 
 const stackConfig: StackNavigatorConfig = {
-  initialRouteName: Routes.Entrypoint,
+  initialRouteName: Routes.UserScreen,
   headerMode: 'screen',
 };
 
 const routeConfigMap: NavigationRouteConfigMap = {
-  [Routes.Entrypoint]: {
-    screen: Entrypoint,
+  [Routes.UserScreen]: {
+    screen: UserScreen,
     navigationOptions: { header: null },
   },
-  [Routes.Auth]: {
-    screen: Auth,
-    navigationOptions: { header: null },
-  },
-  [Routes.Register]: {
-    screen: Register,
-    navigationOptions: { header: null },
-  },
-  [Routes.CameraScreen]: {
-    screen: CameraScreen,
-    navigationOptions: { header: null },
-  },
-  [Routes.LoggedInStack]: {
-    screen: LoggedInStack,
-    navigationOptions: { header: null },
-  },
-
 };
 
 const appNavigator = createStackNavigator(routeConfigMap, stackConfig);
 
-export const RootNavigator = createAppContainer(appNavigator);
+export const UserStack = createAppContainer(appNavigator);

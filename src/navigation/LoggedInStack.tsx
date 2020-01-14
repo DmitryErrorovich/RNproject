@@ -6,6 +6,8 @@ import React from 'react';
 import { theme } from '../components/sharedStyles';
 import { ProductStack } from './ProductStack';
 import { UserScreen } from 'features/UserScreen/UserScreen';
+import { CameraScreen } from 'features/CameraScreen/CameraScreen';
+import { UserStack } from './UserStack';
 
 // const bottomTabNavigatorLiteElements = {
 //   productGreen: React.createElement(Icon, name = 'home', size={30}, color='#fff'),
@@ -21,25 +23,26 @@ export const LoggedInStack = createMaterialBottomTabNavigator(
           if (tintColor === theme.colors.primary) {
             return <Icon name="home" color="#fff" size={24} />;
           } else {
-            return <Icon name="home" color="#eee" size={24} />;
+            return <Icon name="home" color="#666" size={24} />;
           }
         },
       },
     },
-    [Routes.UserScreen]: {
-      screen: UserScreen,
+    [Routes.UserStack]: {
+      screen: UserStack,
       navigationOptions: {
         tabBarIcon: ({ tintColor }: any) => {
           if (tintColor === theme.colors.primary) {
             return <Icon name="user" color="#fff" size={24} />;
           } else {
-            return <Icon name="user" color="#eee" size={24} />;
+            return <Icon name="user" color="#666" size={24} />;
           }
         },
       },
     },
   },
   {
+    shifting: true,
     initialRouteName: Routes.ProductStack,
     activeColor: theme.colors.primary,
     barStyle: { backgroundColor: '#6d62ee' },

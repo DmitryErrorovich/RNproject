@@ -43,7 +43,7 @@ export class ProductItem extends Component<IProps> {
         <Text style={{ fontWeight: 'bold', fontSize: 14 }}>Description:</Text>
         <Text style={{ fontSize: 16 }}>{this.props.item?.text}</Text>
       </View>
-    )
+    );
 
   public render() {
     const { item, onPress, hideBorder } = this.props;
@@ -51,13 +51,8 @@ export class ProductItem extends Component<IProps> {
       <View
         onTouchStart={onPress}
         style={hideBorder ? styles.containerWithoutBorder : styles.container}>
-        <WeatherIcon
-          icon={item.img}
-          style={styles.productImage}
-        />
-        <Text style={styles.title}>
-          {item?.title}
-        </Text>
+        <WeatherIcon icon={item.img} style={styles.productImage} />
+        <Text style={styles.title}>{item?.title}</Text>
         {this.renderDescription()}
       </View>
     );

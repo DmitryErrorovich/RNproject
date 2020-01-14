@@ -84,6 +84,7 @@ export class ProductInfo extends Component<
     super(props);
     this.state = {
       refreshing: false,
+      isCollapsed: true,
       scrollY: new Animated.Value(0),
       // updateFlatList: true,
     };
@@ -158,17 +159,43 @@ export class ProductInfo extends Component<
     this.setState({ refreshing: false });
   };
 
+  public animateComment = () => {
+    this.setState({ isCollapsed: !this.state.isCollapsed });
+    if (this.state.isCollapsed) {
+      Animated.timing(this.state.scrollY, {
+        toValue: 65,
+        duration: 500,
+      }).start();
+    } else {
+      Animated.timing(this.state.scrollY, {
+        toValue: 0,
+        duration: 500,
+      }).start();
+    }
+  };
+
   public render() {
     const { filteredReviews } = this.props[PRODUCT_STORE];
     const commentOpacity = this.state.scrollY.interpolate({
-      inputRange: [0, COMMENT_MIN_HEIGHT],
-      outputRange: [1, 0],
+      inputRange: [0, 1],
+      outputRange: [0, 1],
       extrapolate: 'clamp',
     });
 
     const commentHeight = this.state.scrollY.interpolate({
-      inputRange: [0, COMMENT_SCROLL_DISTANCE],
-      outputRange: [COMMENT_MAX_HEIGHT, COMMENT_MIN_HEIGHT],
+      inputRange: [0, 65],
+      outputRange: [0, 125],
+      extrapolate: 'clamp',
+    });
+    const buttonOpacity = this.state.scrollY.interpolate({
+      inputRange: [0, 1],
+      outputRange: [1, 0],
+      extrapolate: 'clamp',
+    });
+
+    const buttonHeight = this.state.scrollY.interpolate({
+      inputRange: [0, 45],
+      outputRange: [45, 0],
       extrapolate: 'clamp',
     });
     return (
@@ -179,9 +206,12 @@ export class ProductInfo extends Component<
           screenTitle="Product details"
           background
         />
-        <Animated.View
-          style={{ elevation: 15, borderBottomColor: '#eee', borderBottomWidth: 2 }}>
+        <Animated.View>
           <ProductItem hideBorder item={this.selectedItem} />
+          <Animated.View
+            style={{ opacity: buttonOpacity, height: buttonHeight }}>
+            <Button onPress={this.animateComment}>Leave your Comment</Button>
+          </Animated.View>
           <Animated.View
             style={{
               opacity: commentOpacity,
@@ -206,13 +236,14 @@ export class ProductInfo extends Component<
               onFinishRating={this.rate}
               size={15}
             />
-
+            <View onTouchEnd={this.animateComment}>
             <Button
               disabled={!this.props.values[Fields.CommentField]}
               mode="contained"
               onPress={this.props.handleSubmit}>
               Send
             </Button>
+            </View>
           </Animated.View>
         </Animated.View>
 
@@ -231,9 +262,6 @@ export class ProductInfo extends Component<
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}
           renderItem={this.renderReview}
-          onScroll={Animated.event([
-            { nativeEvent: { contentOffset: { y: this.state.scrollY } } },
-          ])}
         />
       </Animated.View>
     );

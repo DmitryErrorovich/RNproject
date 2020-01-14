@@ -1,8 +1,8 @@
-import { action, observable } from "mobx";
-import { persist } from "mobx-persist";
+import { action, observable } from 'mobx';
+import { persist } from 'mobx-persist';
 
-import { authUser, registerUser } from "../api/auth";
-import { IUser } from "../models/user.js";
+import { authUser, registerUser } from '../api/auth';
+import { IUser } from '../models/user.js';
 
 export interface IUserSettingsStore {
   user: IUser;
@@ -10,19 +10,24 @@ export interface IUserSettingsStore {
 
   signIn: (username: string, password: string) => Promise<boolean>;
   signUp: (username: string, password: string) => Promise<boolean>;
+  setUserPhoto: (image: string) => void;
   clean: () => void;
   logout: () => void;
 }
 
-export const USER_SETTINGS_STORE = "USER_SETTINGS_STORE";
+export const USER_SETTINGS_STORE = 'USER_SETTINGS_STORE';
 
 export class UserSettingsStore implements IUserSettingsStore {
-  @persist("object") @observable public user = {
-    password: "",
-    username: "",
-    token: ""
+  @persist('object') @observable public user = {
+    password: '',
+    username: '',
+    name: '',
+    surname: '',
+    token: '',
+    photo:
+      'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
   };
-  @observable public error = "";
+  @observable public error = '';
 
   @action.bound
   public async signIn(username: string, password: string) {
@@ -31,10 +36,10 @@ export class UserSettingsStore implements IUserSettingsStore {
       this.user.password = password;
       const data = {
         username,
-        password
+        password,
       };
       const response = await authUser(data);
-      console.log({ data: response.data.success});
+      console.log({ data: response.data.success });
       if (response.data.success) {
         this.user.token = response.data.token;
       } else {
@@ -50,7 +55,7 @@ export class UserSettingsStore implements IUserSettingsStore {
   public async signUp(username: string, password: string) {
     const data = {
       username,
-      password
+      password,
     };
     try {
       const response = await registerUser(data);
@@ -61,17 +66,22 @@ export class UserSettingsStore implements IUserSettingsStore {
     }
   }
 
+  @action.bound
+  public async setUserPhoto(image: string) {
+    this.user.photo = image;
+  }
+
   public clean = () => {
-    this.user.email = "";
-    this.user.password = "";
-    this.user.token = "";
-    this.error = "";
+    this.user.email = '';
+    this.user.password = '';
+    this.user.token = '';
+    this.error = '';
   };
 
   public logout() {
-    this.user.email = "";
-    this.user.password = "";
-    this.user.token = "";
-    this.error = "";
+    this.user.email = '';
+    this.user.password = '';
+    this.user.token = '';
+    this.error = '';
   }
 }

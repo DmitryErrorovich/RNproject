@@ -15,7 +15,22 @@ export const styles = StyleSheet.create({
     borderWidth: 2,
     marginTop: 20,
   },
+  preview: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  capture: {
+    flex: 0,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    padding: 15,
+    paddingHorizontal: 20,
+    alignSelf: 'center',
+    margin: 20,
+  },
   containerWithoutBorder: {
+    padding: 20,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',

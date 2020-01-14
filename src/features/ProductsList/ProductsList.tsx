@@ -42,35 +42,11 @@ interface IState {
 export class ProductsList extends Component<IProps, IState> {
   constructor(props: IProps & any) {
     super(props);
-    this.state = {
-      isConnected: true,
-    };
-    NetInfo.fetch().then((isConnected: boolean) => {
-      this.setState({ isConnected });
-    });
   }
 
   public async componentDidMount() {
-    NetInfo.addEventListener('connectionChange', this.handleConnectivityChange);
-
     await this.props[PRODUCT_STORE].getProducts();
   }
-
-  public componentWillUnmount() {
-    NetInfo.removeEventListener(
-      'connectionChange',
-      this.handleConnectivityChange,
-    );
-  }
-
-  public handleConnectivityChange = (isConnected: boolean) => {
-    console.log({ isConnected });
-    if (isConnected) {
-      this.setState({ isConnected });
-    } else {
-      this.setState({ isConnected });
-    }
-  };
 
   public logout = () => {
     this.props[USER_SETTINGS_STORE].logout();
@@ -78,12 +54,7 @@ export class ProductsList extends Component<IProps, IState> {
   };
 
   public selectProduct = (item: IProduct) => async () => {
-    if (
-      !isEmpty(this.props[PRODUCT_STORE].reviews) &&
-      this.props[PRODUCT_STORE].reviews[0].product !== item.id
-    ) {
-      await this.props[PRODUCT_STORE].getProductReviews(item.id);
-    }
+    await this.props[PRODUCT_STORE].getProductReviews(item.id);
     this.props.navigation.navigate({
       routeName: Routes.ProductInfo,
       params: {
@@ -105,7 +76,7 @@ export class ProductsList extends Component<IProps, IState> {
   public render() {
     const { filteredProducts } = this.props[PRODUCT_STORE];
     return (
-      <View style={{ backgroundColor: '#465881', flex: 1 }}>
+      <View style={{ backgroundColor: '#fff', flex: 1 }}>
         {/* <SafeAreaView style={{ flex: 0, backgroundColor: theme.colors.primary }} /> //implement for IOS later */}
         <HeaderComponent
           logout={this.logout}
