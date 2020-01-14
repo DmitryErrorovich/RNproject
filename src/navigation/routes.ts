@@ -7,4 +7,5 @@ export enum Routes {
     ProductInfo = 'PRODUCT_INFO',
     ProductStack = 'PRODUCTS_STACK',
     ProductsList = 'PRODUCTS_LIST',
+    UserScreen = 'USER_SCREEN',
 }

@@ -1,7 +1,13 @@
 import { Field, InjectedFormikProps } from 'formik';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { Text, View, Animated, RefreshControl } from 'react-native';
+import {
+  Text,
+  View,
+  Animated,
+  RefreshControl,
+  ListRenderItemInfo,
+} from 'react-native';
 import { NavigationParams, NavigationScreenProp } from 'react-navigation';
 import * as Yup from 'yup';
 
@@ -24,6 +30,11 @@ interface IProps {
   navigation: NavigationScreenProp<{}, NavigationParams>;
   [PRODUCT_STORE]: IProductsStore;
   [USER_SETTINGS_STORE]: IUserSettingsStore;
+}
+
+interface IState {
+  refreshing: boolean;
+  scrollY: Animated.Value;
 }
 
 export enum Fields {
@@ -66,7 +77,8 @@ const formikEnhance = withFormik<IProps, IFormValues>({
 @formikEnhance
 @observer
 export class ProductInfo extends Component<
-  InjectedFormikProps<IProps, IFormValues>
+  InjectedFormikProps<IProps, IFormValues>,
+  IState
 > {
   constructor(props: IProps & any) {
     super(props);
@@ -148,8 +160,6 @@ export class ProductInfo extends Component<
 
   public render() {
     const { filteredReviews } = this.props[PRODUCT_STORE];
-    console.log({filteredReviews});
-    console.log({updateFlatList:this.state.updateFlatList});
     const commentOpacity = this.state.scrollY.interpolate({
       inputRange: [0, COMMENT_MIN_HEIGHT],
       outputRange: [1, 0],
@@ -170,7 +180,7 @@ export class ProductInfo extends Component<
           background
         />
         <Animated.View
-          style={{ borderBottomColor: '#eee', borderBottomWidth: 2 }}>
+          style={{ elevation: 15, borderBottomColor: '#eee', borderBottomWidth: 2 }}>
           <ProductItem hideBorder item={this.selectedItem} />
           <Animated.View
             style={{

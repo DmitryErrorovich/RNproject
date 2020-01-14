@@ -10,13 +10,11 @@ import Icon from 'react-native-vector-icons/AntDesign';
 interface IHeaderProps {
   screenTitle: string;
   navigation: any;
-  analyticsScreenName: string;
   onPress?: any;
   background?: boolean;
-  leavingPageMessage?: string;
   menuButtons?: any;
   visibleDropdown?: boolean;
-  hideBackButton: boolean;
+  hideBackButton?: boolean;
   disableNotice?: boolean;
   goBack?: () => void;
   showHeaderDropDown?: () => void;
@@ -61,16 +59,7 @@ export class HeaderComponent extends PureComponent<IHeaderProps, IHeaderState> {
   public showDropdown = () => this.setState({ visible: true });
 
   public backPressed() {
-    if (this.props.leavingPageMessage) {
-      AlertService.showYesNoAlert(
-        '',
-        this.props.leavingPageMessage,
-        this.goBack,
-        null,
-      );
-    } else {
-      this.goBack();
-    }
+    this.goBack();
   }
 
   public goBack = () => {

@@ -11,6 +11,7 @@ import {
   SafeAreaView,
 } from 'react-navigation';
 import * as Yup from 'yup';
+import { isEmpty } from 'lodash';
 
 import { CustomButton } from 'components/button/Button';
 import { InputField } from 'components/inputField/Input';
@@ -63,7 +64,7 @@ export class ProductsList extends Component<IProps, IState> {
   }
 
   public handleConnectivityChange = (isConnected: boolean) => {
-    console.log({isConnected});
+    console.log({ isConnected });
     if (isConnected) {
       this.setState({ isConnected });
     } else {
@@ -77,9 +78,8 @@ export class ProductsList extends Component<IProps, IState> {
   };
 
   public selectProduct = (item: IProduct) => async () => {
-    console.log({ connected: this.state.isConnected });
     if (
-      !!this.props[PRODUCT_STORE].reviews ||
+      !isEmpty(this.props[PRODUCT_STORE].reviews) &&
       this.props[PRODUCT_STORE].reviews[0].product !== item.id
     ) {
       await this.props[PRODUCT_STORE].getProductReviews(item.id);
