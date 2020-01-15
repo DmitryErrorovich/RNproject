@@ -5,6 +5,8 @@ import {
   Text,
   TouchableOpacity,
   View,
+  PermissionsAndroid,
+  Platform,
 } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 import { CameraPermission } from 'models/defaults';
@@ -34,7 +36,20 @@ const PendingView = () => (
 @inject(USER_SETTINGS_STORE)
 @observer
 export class CameraScreen extends PureComponent<IProps> {
+  public checkAndroidPermission = async () => {
+    try {
+      const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
+      await PermissionsAndroid.request(permission);
+      Promise.resolve();
+    } catch (error) {
+      Promise.reject(error);
+    }
+};
+
   public takePicture = async (camera) => {
+    if (Platform.OS === 'android'){
+      await this.checkAndroidPermission();
+    }
     const options = { quality: 0.5, base64: false };
     const data = await camera.takePictureAsync(options);
     //  eslint-disable-next-line

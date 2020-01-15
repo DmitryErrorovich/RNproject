@@ -1,7 +1,7 @@
 import { Field, InjectedFormikProps, withFormik } from 'formik';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { Text, View, Image } from 'react-native';
+import { Text, View, Image, PermissionsAndroid, Platform } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import {
   NavigationParams,
@@ -161,7 +161,20 @@ export class UserScreen extends Component<
     );
   };
 
-  public handleAddPhoto = () => {
+  public checkAndroidPermission = async () => {
+    try {
+      const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
+      await PermissionsAndroid.request(permission);
+      Promise.resolve();
+    } catch (error) {
+      Promise.reject(error);
+    }
+};
+
+  public handleAddPhoto = async() => {
+    if (Platform.OS === 'android'){
+      await this.checkAndroidPermission();
+    }
     if (isEmpty(this.state.photos)) {
       CameraRoll.getPhotos({
         first: 20,
