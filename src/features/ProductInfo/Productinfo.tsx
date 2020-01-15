@@ -186,7 +186,6 @@ export class ProductInfo extends Component<
               component={TextInput}
               onChangeText={this.changeCommentText}
               mode="outlined"
-              autoFocus
               error={this.props.errors[Fields.CommentField]}
               selectionColor="#6d62ee"
               label="Leave you comment"
