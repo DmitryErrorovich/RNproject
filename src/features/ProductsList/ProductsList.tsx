@@ -1,30 +1,18 @@
-import { Field, InjectedFormikProps, withFormik } from 'formik';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { Alert, Text, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import Swipeable from 'react-native-swipeable';
+import { Text, View, ListRenderItemInfo } from 'react-native';
 import {
   NavigationParams,
   NavigationScreenProp,
   FlatList,
-  SafeAreaView,
 } from 'react-navigation';
-import * as Yup from 'yup';
-import { isEmpty } from 'lodash';
 
-import { CustomButton } from 'components/button/Button';
-import { InputField } from 'components/inputField/Input';
-import { i18n } from 'i18n/i18n';
 import { Routes } from 'navigation/routes';
 import { PRODUCT_STORE, IProductsStore } from 'store/productsStore';
 import { styles } from './styles';
 import { HeaderComponent } from 'components/headerComponent/headerComponent';
-import { theme } from 'components/sharedStyles';
-import { WeatherIcon } from 'components/weatherIcon/WeatherIcon';
 import { ProductItem } from 'features/ProductItem/ProductItem';
 import { IProduct } from '../../models/Products';
-import NetInfo from '@react-native-community/netinfo';
 import { USER_SETTINGS_STORE, IUserSettingsStore } from 'store/userSettings';
 
 interface IProps {
@@ -42,6 +30,13 @@ interface IState {
 export class ProductsList extends Component<IProps, IState> {
   constructor(props: IProps & any) {
     super(props);
+  }
+
+  public get helloText() {
+    if (!this.props[USER_SETTINGS_STORE].user.name) {
+      return '';
+    }
+    return `Hello ${this.props[USER_SETTINGS_STORE].user.name}`;
   }
 
   public async componentDidMount() {
@@ -76,7 +71,7 @@ export class ProductsList extends Component<IProps, IState> {
   public render() {
     const { filteredProducts } = this.props[PRODUCT_STORE];
     return (
-      <View style={{ backgroundColor: '#fff', flex: 1 }}>
+      <View style={styles.productsContainer}>
         {/* <SafeAreaView style={{ flex: 0, backgroundColor: theme.colors.primary }} /> //implement for IOS later */}
         <HeaderComponent
           logout={this.logout}
@@ -87,6 +82,9 @@ export class ProductsList extends Component<IProps, IState> {
           navigation={this.props.navigation}
         />
         <View style={styles.container}>
+          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+            {this.helloText}
+          </Text>
           <FlatList
             contentContainerStyle={styles.productsList}
             data={filteredProducts}

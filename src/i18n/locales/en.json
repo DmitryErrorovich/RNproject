@@ -1,21 +1,12 @@
 {
-    "weather": {
-      "welcome": "Welcome!",
-      "goToFavorites": "Go to favorites",
-      "fieldPlaceholder": "City e.g 'New...'",
-      "cleanButton": "Clean",
-      "cityRequired": "City is required"
-    },
-    "city": {
-      "maxTemp": "Max: %{maxTemp}°",
-      "minTemp": "Min: %{minTemp}°",
-      "temperature": "Temperature: %{temperature}°С",
-      "date": "Date: %{date}"
-    },
-    "backButton": "Go back",
-    "favorites": {
-      "title": "Favorites",
-      "removeButton": "Remove all"
+    "User": {
+      "enter_name": "Enter name",
+      "your_name": "Your name:",
+      "enter_surname": "Enter surname",
+      "your_surname": "Your surname",
+      "your_photo": "Your photo",
+      "choose_gallery": "Choose from gallery",
+      "your_email": "Your email"
     }
   }
   

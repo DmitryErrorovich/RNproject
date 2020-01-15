@@ -11,7 +11,6 @@ import {
 import { NavigationParams, NavigationScreenProp } from 'react-navigation';
 import * as Yup from 'yup';
 
-import { isEqual } from 'lodash';
 import { AirbnbRating } from 'react-native-elements';
 import { PRODUCT_STORE, IProductsStore } from 'store/productsStore';
 import { HeaderComponent } from 'components/headerComponent/headerComponent';
@@ -21,10 +20,7 @@ import { withFormik } from '../../utils/withFormik';
 import { IReview } from '../../models/Products';
 import { USER_SETTINGS_STORE, IUserSettingsStore } from 'store/userSettings';
 import { Routes } from 'navigation/routes';
-
-const COMMENT_MAX_HEIGHT = 125;
-const COMMENT_MIN_HEIGHT = 0;
-const COMMENT_SCROLL_DISTANCE = COMMENT_MAX_HEIGHT - COMMENT_MIN_HEIGHT;
+import { styles } from './ProductInfoStyles';
 
 interface IProps {
   navigation: NavigationScreenProp<{}, NavigationParams>;
@@ -35,6 +31,7 @@ interface IProps {
 interface IState {
   refreshing: boolean;
   scrollY: Animated.Value;
+  isCollapsed: boolean;
 }
 
 export enum Fields {
@@ -47,13 +44,7 @@ export interface IFormValues {
   [Fields.RateField]: number;
 }
 
-const validationSchema = Yup.object().shape({
-  CommentField: Yup.string().required('Type something please'),
-  RateField: Yup.string().required('Rate it please'),
-});
-
 const formikEnhance = withFormik<IProps, IFormValues>({
-  // validationSchema,
   enableReinitialize: true,
   mapPropsToValues: () => ({
     [Fields.CommentField]: '',
@@ -86,28 +77,8 @@ export class ProductInfo extends Component<
       refreshing: false,
       isCollapsed: true,
       scrollY: new Animated.Value(0),
-      // updateFlatList: true,
     };
   }
-
-  // public getSnapshotBeforeUpdate(prevProps: IProps) {
-  //   const isReviewsChanged = !isEqual(
-  //     prevProps[PRODUCT_STORE].filteredReviews,
-  //     this.props[PRODUCT_STORE].filteredReviews,
-  //   );
-
-  //   return isReviewsChanged;
-  // }
-
-  // public componentDidUpdate(
-  //   prevProps: IProps,
-  //   prevState: IState,
-  //   snapshot: boolean,
-  // ) {
-  //   if (snapshot) {
-  //     this.setState({ updateFlatList: !prevState.updateFlatList });
-  //   }
-  // }
 
   public get selectedItem() {
     return this.props.navigation.getParam('selected');
@@ -121,16 +92,7 @@ export class ProductInfo extends Component<
   public reviewsKeyExtractor = (item: IReview) => `Review-${item.id}`;
 
   public renderReview = ({ item }: ListRenderItemInfo<IReview>) => (
-    <View
-      style={{
-        flex: 1,
-        alignItems: 'center',
-        marginBottom: 20,
-        padding: 15,
-        borderRadius: 8,
-        borderColor: '#eee',
-        borderWidth: 1,
-      }}>
+    <View style={styles.reviewContainer}>
       <AirbnbRating
         isDisabled
         count={5}
@@ -138,7 +100,7 @@ export class ProductInfo extends Component<
         defaultRating={item.rate}
         size={15}
       />
-      <View style={{ marginTop: 15 }}>
+      <View style={{ marginTop: 15, alignItems: 'center' }}>
         <Text style={{ fontWeight: 'bold', fontSize: 14 }}>Comment: </Text>
         <Text style={{ fontSize: 16 }}>{item.text}</Text>
       </View>
@@ -218,11 +180,13 @@ export class ProductInfo extends Component<
               height: commentHeight,
               paddingHorizontal: 25,
             }}>
+            
             <Field
               name={Fields.CommentField}
               component={TextInput}
               onChangeText={this.changeCommentText}
               mode="outlined"
+              autoFocus
               error={this.props.errors[Fields.CommentField]}
               selectionColor="#6d62ee"
               label="Leave you comment"
@@ -237,12 +201,12 @@ export class ProductInfo extends Component<
               size={15}
             />
             <View onTouchEnd={this.animateComment}>
-            <Button
-              disabled={!this.props.values[Fields.CommentField]}
-              mode="contained"
-              onPress={this.props.handleSubmit}>
-              Send
-            </Button>
+              <Button
+                disabled={!this.props.values[Fields.CommentField]}
+                mode="contained"
+                onPress={this.props.handleSubmit}>
+                Send
+              </Button>
             </View>
           </Animated.View>
         </Animated.View>

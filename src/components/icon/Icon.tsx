@@ -2,16 +2,13 @@ import * as React from 'react';
 import { Image, ImageStyle, StyleProp } from 'react-native';
 
 import { HEROKU_API } from '../../api/auth';
-import { WeatherStateAbbr } from '../../models/weather';
 
-const name = (icon: WeatherStateAbbr) => {
-  console.log({icon})
-  return ({
-  uri: `${HEROKU_API}/static/${icon}`
-})};
+const name = (icon: any) => ({
+  uri: `${HEROKU_API}/static/${icon}`,
+});
 
-export const WeatherIcon: React.SFC<{
-  icon: WeatherStateAbbr;
+export const Icon: React.SFC<{
+  icon: any;
   style?: StyleProp<ImageStyle>;
   onPress?: () => void;
 }> = ({ icon, style, ...rest }) => (

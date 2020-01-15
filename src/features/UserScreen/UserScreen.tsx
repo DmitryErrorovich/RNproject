@@ -1,40 +1,32 @@
 import { Field, InjectedFormikProps, withFormik } from 'formik';
 import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { Alert, Text, View, Image } from 'react-native';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import Swipeable from 'react-native-swipeable';
+import { Text, View, Image } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import {
   NavigationParams,
   NavigationScreenProp,
-  FlatList,
-  SafeAreaView,
 } from 'react-navigation';
-import * as Yup from 'yup';
 import CameraRoll from '@react-native-community/cameraroll';
-
-import { CustomButton } from 'components/button/Button';
-import { InputField } from 'components/inputField/Input';
 import { i18n } from 'i18n/i18n';
 import { Routes } from 'navigation/routes';
-import { PRODUCT_STORE, IProductsStore } from 'store/productsStore';
-import { styles } from './UserScreenStyles';
 import { HeaderComponent } from 'components/headerComponent/headerComponent';
-import { theme } from 'components/sharedStyles';
-import { WeatherIcon } from 'components/weatherIcon/WeatherIcon';
-import { ProductItem } from 'features/ProductItem/ProductItem';
-import { IProduct } from '../../models/Products';
-import NetInfo from '@react-native-community/netinfo';
 import { USER_SETTINGS_STORE, IUserSettingsStore } from 'store/userSettings';
-import { Avatar, Divider } from 'react-native-elements';
-import { RNCamera } from 'react-native-camera';
-import { CameraPermission } from 'models/defaults';
+import { Avatar } from 'react-native-elements';
 import { isEmpty } from 'lodash';
 import { Button, TextInput } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/AntDesign';
+import { styles } from './UserScreenStyles';
 
 interface IProps {
   navigation: NavigationScreenProp<{}, NavigationParams>;
   [USER_SETTINGS_STORE]: IUserSettingsStore;
+}
+interface IState {
+  photos: [];
+  isPhotosCollapsed: boolean;
+  nameFieldCollapse: boolean;
+  surnameFieldCollapse: boolean;
 }
 
 export enum Fields {
@@ -48,13 +40,12 @@ export interface IFormValues {
 }
 
 const formikEnhance = withFormik<IProps, IFormValues>({
-  // validationSchema,
   enableReinitialize: true,
   mapPropsToValues: () => ({
     [Fields.Name]: '',
-    [Fields.Surname]: 0,
+    [Fields.Surname]: '',
   }),
-  handleSubmit: async (values, formikBag) => {
+  handleSubmit: async (values) => {
     console.log({ values });
   },
 });
@@ -63,7 +54,8 @@ const formikEnhance = withFormik<IProps, IFormValues>({
 @formikEnhance
 @observer
 export class UserScreen extends Component<
-  InjectedFormikProps<IProps, IFormValues>
+  InjectedFormikProps<IProps, IFormValues>,
+  IState
 > {
   constructor(props: IProps) {
     super(props);
@@ -71,8 +63,14 @@ export class UserScreen extends Component<
       photos: [],
       isPhotosCollapsed: true,
       nameFieldCollapse: true,
+      surnameFieldCollapse: true,
     };
   }
+
+  public logout = () => {
+    this.props[USER_SETTINGS_STORE].logout();
+    this.props.navigation.navigate({ routeName: Routes.Entrypoint });
+  };
 
   public changePhoto = () => {
     this.setState({ photos: [] });
@@ -83,25 +81,82 @@ export class UserScreen extends Component<
     this.setState({ nameFieldCollapse: false });
   };
 
+  public changeSurname = () => {
+    this.setState({ surnameFieldCollapse: false });
+  };
+
+  public changeNameText = (text: string) => {
+    this.props.setFieldValue(Fields.Name, text);
+    this.props[USER_SETTINGS_STORE].setUserName(text);
+  };
+
+  public changeSurnameText = (text: string) => {
+    this.props.setFieldValue(Fields.Surname, text);
+    this.props[USER_SETTINGS_STORE].setUserSurname(text);
+  };
+
+  public surnameFieldBlur = () => {
+    this.setState({ surnameFieldCollapse: true });
+  };
+
+  public nameFieldBlur = () => {
+    this.setState({ nameFieldCollapse: true });
+  };
+
   public renderNameFields = () => {
     if (!this.state.nameFieldCollapse) {
       return (
         <Field
           component={TextInput}
           name={Fields.Name}
-          style={{ width: 100 }}
+          label={i18n.t('User.enter_name')}
+          autoFocus={true}
+          style={styles.editField}
           onChangeText={this.changeNameText}
           mode="flat"
+          onBlur={this.nameFieldBlur}
           selectionColor="#6d62ee"
         />
       );
     }
     return (
-      <View>
-        <Text style={{ fontWeight: 'bold', fontSize: 14 }}>Your name:</Text>
-        <Text style={{ fontSize: 16 }}>
-          {this.props[USER_SETTINGS_STORE].user.name}
-        </Text>
+      <View style={styles.fieldContainer}>
+        <Text style={styles.nameTitle}>{i18n.t('User.your_name')}</Text>
+        <View style={styles.nameContainer}>
+          <Text numberOfLines={1} style={styles.name}>
+            {this.props[USER_SETTINGS_STORE].user.name}
+          </Text>
+          <Icon style={{ flex: 1 }} name="edit" color="#3f51b5" size={18} />
+        </View>
+      </View>
+    );
+  };
+
+  public renderSurnameFields = () => {
+    if (!this.state.surnameFieldCollapse) {
+      return (
+        <Field
+          component={TextInput}
+          name={Fields.Surname}
+          label={i18n.t('User.enter_surname')}
+          autoFocus={true}
+          style={styles.editField}
+          onChangeText={this.changeSurnameText}
+          mode="flat"
+          onBlur={this.surnameFieldBlur}
+          selectionColor="#6d62ee"
+        />
+      );
+    }
+    return (
+      <View style={styles.fieldContainer}>
+        <Text style={styles.nameTitle}>{i18n.t('User.your_surname')}</Text>
+        <View style={styles.nameContainer}>
+          <Text numberOfLines={1} style={styles.name}>
+            {this.props[USER_SETTINGS_STORE].user.surname}
+          </Text>
+          <Icon style={{ flex: 1 }} name="edit" color="#3f51b5" size={18} />
+        </View>
       </View>
     );
   };
@@ -113,11 +168,10 @@ export class UserScreen extends Component<
         assetType: 'Photos',
       })
         .then((r) => {
-          console.log({ r });
           this.setState({ photos: r.edges });
         })
         .catch((err) => {
-          //Error Loading Images
+          throw new Error(`error: ${err}`);
         });
     }
   };
@@ -127,26 +181,32 @@ export class UserScreen extends Component<
     this.props[USER_SETTINGS_STORE].setUserPhoto(image);
   };
 
+  public renderGallery = () =>
+    this.state.photos.map((p, i) => (
+      <View key={i} onTouchEnd={this.setNewImage(p.node.image.uri)}>
+        <Image
+          key={i}
+          style={styles.galleryImage}
+          source={{ uri: p.node.image.uri }}
+        />
+      </View>
+    ));
+
   public render() {
-    console.log({ photos: this.state.photos });
     return (
-      <View style={{ backgroundColor: '#fff', flex: 1 }}>
+      <View style={styles.container}>
         <HeaderComponent
           logout={this.logout}
           hideBackButton
-          style={{ marginTop: -100 }}
           background
           screenTitle="User"
           navigation={this.props.navigation}
         />
 
-        <View style={{ alignItems: 'center' }}>
-          <View style={{ alignItems: 'center' }}>
-            <Text style={{ fontWeight: 'bold', fontSize: 14 }}>
-              Your photo:
-            </Text>
+        <View style={styles.alignCenter}>
+          <View style={styles.alignCenter}>
             <Avatar
-              size="xlarge"
+              size={100}
               icon={{ name: 'user', type: 'font-awesome' }}
               rounded
               onPress={this.changePhoto}
@@ -156,48 +216,29 @@ export class UserScreen extends Component<
               showEditButton
             />
             <Button mode="contained" onPress={this.handleAddPhoto}>
-              Choose from Gallery
+              {i18n.t('User.choose_gallery')}
             </Button>
           </View>
           <View>
-            <Text style={{ fontWeight: 'bold', fontSize: 14 }}>
-              Your email:
-            </Text>
+            <Text style={styles.nameTitle}>{i18n.t('User.your_email')}</Text>
             <Text style={{ fontSize: 16 }}>
               {this.props[USER_SETTINGS_STORE].user.username}
             </Text>
           </View>
-          <View onTouchEnd={this.changeName}>{this.renderNameFields()}</View>
-          <View>
-            <Text style={{ fontWeight: 'bold', fontSize: 14 }}>
-              Your surname:
-            </Text>
-            <Text style={{ fontSize: 16 }}>
-              {this.props[USER_SETTINGS_STORE].user.surname}
-            </Text>
+          <View
+            style={{ justifyContent: 'space-evenly' }}
+            onTouchEnd={this.changeName}>
+            {this.renderNameFields()}
+          </View>
+          <View
+            style={{ justifyContent: 'space-evenly' }}
+            onTouchEnd={this.changeSurname}>
+            {this.renderSurnameFields()}
           </View>
           <ScrollView
-            contentContainerStyle={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-            }}>
-            {this.state.photos.map((p, i) => {
-              return (
-                <View onTouchEnd={this.setNewImage(p.node.image.uri)}>
-                  <Image
-                    key={i}
-                    style={{
-                      width: 100,
-                      height: 100,
-                      borderRadius: 12,
-                    }}
-                    source={{ uri: p.node.image.uri }}
-                  />
-                </View>
-              );
-            })}
+            contentContainerStyle={styles.scrollView}
+          >
+            {this.renderGallery()}
           </ScrollView>
         </View>
       </View>

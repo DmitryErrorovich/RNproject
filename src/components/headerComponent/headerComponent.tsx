@@ -1,47 +1,25 @@
 import React, { PureComponent } from 'react';
-import { View, Platform, Text } from 'react-native';
-import { Appbar, Menu } from 'react-native-paper';
+import { View, Platform } from 'react-native';
+import { Appbar } from 'react-native-paper';
 
 import { styles } from './headerComponentStyle';
-import { CustomButton } from 'components/button/Button';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/AntDesign';
 
 interface IHeaderProps {
   screenTitle: string;
   navigation: any;
-  onPress?: any;
   background?: boolean;
-  menuButtons?: any;
-  visibleDropdown?: boolean;
   hideBackButton?: boolean;
-  disableNotice?: boolean;
   goBack?: () => void;
-  showHeaderDropDown?: () => void;
-  hideDropDown?: () => void;
   logout?: () => void;
 }
 
-interface IHeaderState {
-  visible: boolean;
-}
-
-export class HeaderComponent extends PureComponent<IHeaderProps, IHeaderState> {
-  constructor(props: ScreenHeaderProps) {
-    super(props);
-    this.state = { visible: false };
-  }
-
+export class HeaderComponent extends PureComponent<IHeaderProps> {
   public get contentStyle() {
     return this.props.hideBackButton
       ? { justifyContent: 'center', alignItems: 'center' }
       : null;
   }
-
-  static defaultProps = {
-    visibleDropdown: false,
-    hideDropDown: () => {},
-  };
 
   public get textColor() {
     return '#fff';
@@ -54,10 +32,6 @@ export class HeaderComponent extends PureComponent<IHeaderProps, IHeaderState> {
     });
   }
 
-  public hideDropdown = () => this.setState({ visible: false });
-
-  public showDropdown = () => this.setState({ visible: true });
-
   public backPressed() {
     this.goBack();
   }
@@ -68,20 +42,6 @@ export class HeaderComponent extends PureComponent<IHeaderProps, IHeaderState> {
     } else {
       this.props.navigation.pop();
     }
-  };
-
-  public renderMoreButton = () => {
-    if (this.props.menuButtons) {
-      return (
-        <Appbar.Action
-          color={this.textColor}
-          icon="dots-vertical"
-          onPress={this.props.showHeaderDropDown}
-        />
-      );
-    }
-
-    return null;
   };
 
   public renderBackButton = () => {
@@ -117,7 +77,6 @@ export class HeaderComponent extends PureComponent<IHeaderProps, IHeaderState> {
           />
         </Appbar.Header>
 
-        {/* {!this.props.disableNotice && <OfflineNotice />} */}
       </View>
     );
   }

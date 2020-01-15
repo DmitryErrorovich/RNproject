@@ -1,16 +1,16 @@
-import { Field, InjectedFormikProps, withFormik } from "formik";
-import { inject, observer } from "mobx-react";
-import React, { Component } from "react";
-import { Text, View } from "react-native";
-import { Snackbar } from "react-native-paper";
-import { NavigationParams, NavigationScreenProp } from "react-navigation";
-import * as Yup from "yup";
+import { Field, InjectedFormikProps, withFormik } from 'formik';
+import { inject, observer } from 'mobx-react';
+import React, { Component } from 'react';
+import { Text, View } from 'react-native';
+import { Snackbar } from 'react-native-paper';
+import { NavigationParams, NavigationScreenProp } from 'react-navigation';
+import * as Yup from 'yup';
 
-import { CustomButton } from "components/button/Button";
-import { InputField } from "components/inputField/Input";
-import { Routes } from "navigation/routes";
-import { IUserSettingsStore, USER_SETTINGS_STORE } from "store/userSettings";
-import { styles } from "./styles";
+import { CustomButton } from 'components/button/Button';
+import { InputField } from 'components/inputField/Input';
+import { Routes } from 'navigation/routes';
+import { IUserSettingsStore, USER_SETTINGS_STORE } from 'store/userSettings';
+import { styles } from './styles';
 
 interface IFormValues {
   email: string;
@@ -29,10 +29,10 @@ interface IState {
 class AuthForm extends Component<
   InjectedFormikProps<IProps, IFormValues>,
   IState
-  > {
+> {
   public dismissSnackbar = () => {
-    this.props[USER_SETTINGS_STORE].clean()
-  }
+    this.props[USER_SETTINGS_STORE].clean();
+  };
 
   public toRegister = () => {
     const { navigation } = this.props;
@@ -44,8 +44,7 @@ class AuthForm extends Component<
       style={{ backgroundColor: 'red' }}
       onDismiss={this.dismissSnackbar}
       duration={3000}
-      visible={this.props[USER_SETTINGS_STORE].error}
-    >
+      visible={this.props[USER_SETTINGS_STORE].error}>
       {this.props[USER_SETTINGS_STORE].error}
     </Snackbar>
   );
@@ -89,13 +88,13 @@ class AuthForm extends Component<
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
-    .required("Email is required")
-    .email("Invalid email"),
+    .required('Email is required')
+    .email('Invalid email'),
   password: Yup.string()
-    .required("Empty password")
+    .required('Empty password')
     // tslint:disable-next-line:no-magic-numbers
-    .min(6, "Password is too short - should be 6 chars minimum.")
-    .matches(/[a-zA-Z]/, "Password can only contain Latin letters.")
+    .min(6, 'Password is too short - should be 6 chars minimum.')
+    .matches(/[a-zA-Z]/, 'Password can only contain Latin letters.'),
 });
 
 const formikEnhance = withFormik<IProps, IFormValues>({
@@ -103,24 +102,24 @@ const formikEnhance = withFormik<IProps, IFormValues>({
   enableReinitialize: true,
   mapPropsToValues: ({
     [USER_SETTINGS_STORE]: {
-      user: { email, password }
-    }
+      user: { email, password },
+    },
   }) => ({
     email,
-    password
+    password,
   }),
   handleSubmit: async ({ email, password }: IFormValues, formikBag) => {
     const response = await formikBag.props[USER_SETTINGS_STORE].signIn(
       email,
-      password
+      password,
     );
-    console.log({ response: formikBag.props[USER_SETTINGS_STORE].user.token })
+    console.log({ response: formikBag.props[USER_SETTINGS_STORE].user.token });
     if (formikBag.props[USER_SETTINGS_STORE].user.token) {
       formikBag.props.navigation.push(Routes.LoggedInStack);
     }
-  }
+  },
 });
 
 export const Auth = inject(USER_SETTINGS_STORE)(
-  formikEnhance(observer(AuthForm))
+  formikEnhance(observer(AuthForm)),
 );

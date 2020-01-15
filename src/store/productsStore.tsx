@@ -17,6 +17,7 @@ export interface IProductsStore {
   getProducts: () => Promise<void>;
   getProductReviews: (id: number) => Promise<void>;
   postProductReview: (comment: string, rate: number) => Promise<void>;
+  clean: () => void;
 }
 
 export const PRODUCT_STORE = 'PRODUCT_STORE';
@@ -56,9 +57,7 @@ export class ProductsStore implements IProductsStore {
   public async getProducts() {
     try {
       const userStore = await this.getStorageValue('USER_SETTINGS_STORE');
-      console.log({ userStore });
       const response = await getProducts(userStore.user.token);
-      console.log({ response });
       this.products = toJS(response);
     } catch (error) {
       throw new Error(error);
@@ -71,9 +70,7 @@ export class ProductsStore implements IProductsStore {
       const userStore = await this.getStorageValue('USER_SETTINGS_STORE');
       const response = await getProductReviews(id, userStore.user.token);
       this.selectedProductID = id;
-      console.log({ response });
       this.reviews = [...toJS(response)];
-      console.log({ review: toJS(this.reviews) });
     } catch (error) {
       throw new Error(error);
     }
@@ -82,7 +79,6 @@ export class ProductsStore implements IProductsStore {
   @action.bound
   public async postProductReview(comment: string, rate: number) {
     try {
-      console.log('PLEASE');
       const userStore = await this.getStorageValue('USER_SETTINGS_STORE');
       const response = await postProductReview(
         comment,
@@ -90,7 +86,6 @@ export class ProductsStore implements IProductsStore {
         this.selectedProductID,
         userStore.user.token,
       );
-      console.log({ response });
     } catch (error) {
       throw new Error(error);
     }

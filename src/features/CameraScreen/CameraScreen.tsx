@@ -40,7 +40,7 @@ export class CameraScreen extends PureComponent<IProps> {
     //  eslint-disable-next-line
     console.log(data.uri);
     await CameraRoll.saveToCameraRoll(data.uri, 'photo');
-    this.props[USER_SETTINGS_STORE].setUserPhoto(data.uri)
+    this.props[USER_SETTINGS_STORE].setUserPhoto(data.uri);
     this.props.navigation.navigate(
       Routes.UserStack,
       {},
@@ -55,10 +55,10 @@ export class CameraScreen extends PureComponent<IProps> {
       <View style={styles.container}>
         <RNCamera
           style={styles.preview}
-          type={RNCamera.Constants.Type.back}
+          type={RNCamera.Constants.Type.front}
           flashMode={RNCamera.Constants.FlashMode.on}
           androidCameraPermissionOptions={CameraPermission}>
-          {({ camera, status, recordAudioPermissionStatus }) => {
+          {({ camera, status }) => {
             if (status !== 'READY') return <PendingView />;
             return (
               <View

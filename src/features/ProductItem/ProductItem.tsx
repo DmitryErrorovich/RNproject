@@ -1,31 +1,8 @@
-import { Field, InjectedFormikProps, withFormik } from 'formik';
-import { inject, observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { Alert, Text, View } from 'react-native';
-import {
-  ScrollView,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from 'react-native-gesture-handler';
-import Swipeable from 'react-native-swipeable';
-import {
-  NavigationParams,
-  NavigationScreenProp,
-  FlatList,
-  SafeAreaView,
-} from 'react-navigation';
-import * as Yup from 'yup';
+import { Text, View } from 'react-native';
 
-import { CustomButton } from 'components/button/Button';
-import { InputField } from 'components/inputField/Input';
-import { i18n } from 'i18n/i18n';
-import { Routes } from 'navigation/routes';
-import { PRODUCT_STORE, IProductsStore } from 'store/productsStore';
 import { styles } from './styles';
-import { HeaderComponent } from 'components/headerComponent/headerComponent';
-import { theme } from 'components/sharedStyles';
-import { WeatherIcon } from 'components/weatherIcon/WeatherIcon';
-import { TouchableRipple, Divider } from 'react-native-paper';
+import { Icon } from 'components/icon/Icon';
 import { IProduct } from '../../models/Products';
 
 interface IProps {
@@ -51,7 +28,7 @@ export class ProductItem extends Component<IProps> {
       <View
         onTouchStart={onPress}
         style={hideBorder ? styles.containerWithoutBorder : styles.container}>
-        <WeatherIcon icon={item.img} style={styles.productImage} />
+        <Icon icon={item.img} style={styles.productImage} />
         <Text style={styles.title}>{item?.title}</Text>
         {this.renderDescription()}
       </View>

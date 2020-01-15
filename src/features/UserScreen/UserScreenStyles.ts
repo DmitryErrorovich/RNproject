@@ -6,28 +6,16 @@ const buttonWidth = width * widthValue;
 
 export const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    backgroundColor: '#fff',
+    flex: 1,
+  },
+  nameContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
-    borderColor: '#eee',
-    borderRadius: 8,
-    borderWidth: 2,
-    marginTop: 20,
   },
-  preview: {
-    flex: 1,
-    justifyContent: 'flex-end',
+  alignCenter: {
     alignItems: 'center',
-  },
-  capture: {
-    flex: 0,
-    backgroundColor: '#fff',
-    borderRadius: 5,
-    padding: 15,
-    paddingHorizontal: 20,
-    alignSelf: 'center',
-    margin: 20,
   },
   containerWithoutBorder: {
     padding: 20,
@@ -35,6 +23,28 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderColor: '#eee',
+  },
+  galleryImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 12,
+  },
+  editField: {
+    width: 200,
+    height: 55,
+    backgroundColor: 'transparent',
+  },
+  name: {
+    fontSize: 16,
+    flex: 3,
+  },
+  nameTitle: {
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  fieldContainer: {
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
   },
   descriptionContainer: {
     marginVertical: 10,
@@ -53,5 +63,11 @@ export const styles = StyleSheet.create({
     paddingVertical: 5,
     borderBottomColor: '#eee',
     borderBottomWidth: 1,
-  }
+  },
+  scrollView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+  },
 });

@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { IAuthData } from 'models/user';
+import { IAuthData } from '../models/user';
 
-export const BASE_API = 'https://www.metaweather.com';
 export const HEROKU_API = 'http://smktesting.herokuapp.com';
 
 export const authUser = async (data: IAuthData) => {
@@ -65,7 +64,6 @@ export const getProductReviews = async (id: number, token: string) => {
 
 export const postProductReview = async (text: string, rate: number, productID: number, token: string) => {
   try {
-    console.log('POST')
     const { data } = await axios.post(
       `${HEROKU_API}/api/reviews/${productID}`,
       {

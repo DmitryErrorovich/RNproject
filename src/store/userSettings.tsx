@@ -11,6 +11,8 @@ export interface IUserSettingsStore {
   signIn: (username: string, password: string) => Promise<boolean>;
   signUp: (username: string, password: string) => Promise<boolean>;
   setUserPhoto: (image: string) => void;
+  setUserName: (text: string) => void;
+  setUserSurname: (text: string) => void;
   clean: () => void;
   logout: () => void;
 }
@@ -39,7 +41,6 @@ export class UserSettingsStore implements IUserSettingsStore {
         password,
       };
       const response = await authUser(data);
-      console.log({ data: response.data.success });
       if (response.data.success) {
         this.user.token = response.data.token;
       } else {
@@ -67,21 +68,37 @@ export class UserSettingsStore implements IUserSettingsStore {
   }
 
   @action.bound
+  public setUserName(text: string) {
+    this.user.name = text;
+  }
+
+  @action.bound
+  public setUserSurname(text: string) {
+    this.user.surname = text;
+  }
+
+  @action.bound
   public async setUserPhoto(image: string) {
     this.user.photo = image;
   }
 
   public clean = () => {
-    this.user.email = '';
     this.user.password = '';
+    this.user.username = '';
+    this.user.name = '';
+    this.user.surname = '';
     this.user.token = '';
-    this.error = '';
+    this.user.photo =
+      'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg';
   };
 
   public logout() {
-    this.user.email = '';
     this.user.password = '';
+    this.user.username = '';
+    this.user.name = '';
+    this.user.surname = '';
     this.user.token = '';
-    this.error = '';
+    this.user.photo =
+      'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg';
   }
 }

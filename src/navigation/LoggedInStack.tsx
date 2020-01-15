@@ -5,14 +5,7 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import React from 'react';
 import { theme } from '../components/sharedStyles';
 import { ProductStack } from './ProductStack';
-import { UserScreen } from 'features/UserScreen/UserScreen';
-import { CameraScreen } from 'features/CameraScreen/CameraScreen';
 import { UserStack } from './UserStack';
-
-// const bottomTabNavigatorLiteElements = {
-//   productGreen: React.createElement(Icon, name = 'home', size={30}, color='#fff'),
-//   productGray: <Icon name='home' size={20} color='#000' />,
-// };
 
 export const LoggedInStack = createMaterialBottomTabNavigator(
   {
