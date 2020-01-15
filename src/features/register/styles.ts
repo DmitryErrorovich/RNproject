@@ -31,6 +31,7 @@ export const styles = StyleSheet.create({
     borderColor: '#3db1ff'
   },
   signUpButtonText: {
+    fontSize: 10,
     color: '#fff',
     textAlign: 'center'
   },
@@ -53,6 +54,7 @@ export const styles = StyleSheet.create({
     alignSelf: 'flex-end'
   },
   signInButtonText: {
+    fontSize: 10,
     textAlign: 'center',
     color: '#fff'
   },
